@@ -18,11 +18,7 @@ func Chunker(text string, filename string, size int) []Chunk {
 
 	words := strings.Fields(text)
 	for i := 0; i < len(words); i += size {
-		end := i + size
-
-		if end > len(words) {
-			end = len(words)
-		}
+		end := min(i+size, len(words))
 
 		chunks = append(
 			chunks,

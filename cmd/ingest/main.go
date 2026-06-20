@@ -59,7 +59,18 @@ func main() {
 			fmt.Printf("Content	   : %s\n", ch.Content)
 			fmt.Printf("Vector	   : %f\n", ch.Vector[:5])
 
-			SearchResponse
+			err = qdrantClient.Upsert(
+				context.Background(),
+				qdrant.Point{
+					ID:      ch.ID,
+					Vector:  ch.Vector,
+					Content: ch.Content,
+					File:    ch.File,
+				},
+			)
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 
 		fmt.Println()

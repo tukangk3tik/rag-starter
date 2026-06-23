@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/tukangk3tik/rag-starter/internal/chat"
 	"github.com/tukangk3tik/rag-starter/internal/embedder"
+	"github.com/tukangk3tik/rag-starter/internal/prompt"
 	"github.com/tukangk3tik/rag-starter/internal/qdrant"
 )
 
@@ -38,7 +40,31 @@ func main() {
 		log.Fatal(err)
 	}
 
-	for _, result := range results {
-		fmt.Printf("ID: %s, Content: %s\n", result.ID, result.Payload.Content)
+	topKResults := make([]prompt.SearchResult, len(results))
+	for i, result := range results {
+		topKResults[i] = prompt.SearchResult{
+			Content: result.Payload.Content,
+			File:    result.Payload.File,
+			Score:   result.Score,
+		}
 	}
+
+	promptResult := prompt.BuildPrompt(
+		query,
+		topKResults,
+	)
+
+	chatClient := &chat.OllamaChat{
+		BaseURL: "http://localhost:11434",
+	}
+
+	response, err := chatClient.Chat(
+		context.Background(),
+		promptResult,
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Response:", response)
 }

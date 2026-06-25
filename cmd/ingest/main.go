@@ -29,6 +29,16 @@ func main() {
 		panic(err)
 	}
 
+	err = qdrantClient.DeleteCollection(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = qdrantClient.CreateCollection(context.Background(), 768)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	for _, entry := range entries {
 		if entry.IsDir() {
 			continue
@@ -41,23 +51,17 @@ func main() {
 			log.Fatal(err)
 		}
 
-		chunck := chunker.Chunker(string(content), entry.Name(), 5)
+		chunks := chunker.Chunker(string(content), entry.Name())
 
 		fmt.Println("=====================================")
 		fmt.Printf("File: %s\n", filePath)
 		// temporary print chunck result
-		for _, ch := range chunck {
+		for _, ch := range chunks {
 			vector, err := embedder.Embed(context.Background(), ch.Content)
 			if err != nil {
 				log.Fatal(err)
 			}
 			ch.Vector = vector
-
-			fmt.Println("-------------------------------------")
-			fmt.Printf("ID	   : %s\n", ch.ID)
-			fmt.Printf("File	   : %s\n", ch.File)
-			fmt.Printf("Content	   : %s\n", ch.Content)
-			fmt.Printf("Vector	   : %f\n", ch.Vector[:5])
 
 			err = qdrantClient.Upsert(
 				context.Background(),
@@ -71,6 +75,13 @@ func main() {
 			if err != nil {
 				log.Fatal(err)
 			}
+
+			fmt.Println("-------------------------------------")
+			fmt.Printf("ID	   : %s\n", ch.ID)
+			fmt.Printf("File	   : %s\n", ch.File)
+			fmt.Printf("Content	   : %s\n", ch.Content)
+			fmt.Printf("Vector	   : %f\n", ch.Vector[:5])
+			fmt.Printf("Status	   : Success\n")
 		}
 
 		fmt.Println()

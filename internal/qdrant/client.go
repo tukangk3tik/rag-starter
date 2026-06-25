@@ -85,6 +85,46 @@ func (c *Client) CreateCollection(
 	return nil
 }
 
+func (c *Client) DeleteCollection(
+	ctx context.Context,
+) error {
+	url := fmt.Sprintf(
+		"%s/collections/%s",
+		c.BaseURL,
+		c.CollectionName,
+	)
+
+	req, err := http.NewRequestWithContext(
+		ctx,
+		http.MethodDelete,
+		url,
+		nil,
+	)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set(
+		"Content-Type",
+		"application/json",
+	)
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode > 300 {
+		return fmt.Errorf(
+			"delete collection failed: %d",
+			resp.StatusCode,
+		)
+	}
+
+	return nil
+}
+
 func (c *Client) Upsert(
 	ctx context.Context,
 	point Point,

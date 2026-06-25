@@ -11,8 +11,10 @@ import (
 	"github.com/tukangk3tik/rag-starter/internal/qdrant"
 )
 
+var MinScore = float32(0.6)
+
 func main() {
-	query := "deploy preprod"
+	query := "kenapa redis cepat?"
 
 	embedder := &embedder.OllamaEmbedder{
 		BaseURL: "http://localhost:11434",
@@ -40,13 +42,16 @@ func main() {
 		log.Fatal(err)
 	}
 
-	topKResults := make([]prompt.SearchResult, len(results))
-	for i, result := range results {
-		topKResults[i] = prompt.SearchResult{
+	topKResults := make([]prompt.SearchResult, 0)
+	for _, result := range results {
+		if result.Score < float64(MinScore) {
+			continue
+		}
+		topKResults = append(topKResults, prompt.SearchResult{
 			Content: result.Payload.Content,
 			File:    result.Payload.File,
 			Score:   result.Score,
-		}
+		})
 	}
 
 	promptResult := prompt.BuildPrompt(

@@ -13,19 +13,17 @@ type Chunk struct {
 }
 
 // need to refactor to split by paragraph, sentence, or other method to make more semantic chunck
-func Chunker(text string, filename string, size int) []Chunk {
+func Chunker(text string, filename string) []Chunk {
 	var chunks []Chunk
 
-	words := strings.Fields(text)
-	for i := 0; i < len(words); i += size {
-		end := min(i+size, len(words))
-
+	paragraphs := strings.Split(text, "\n\n")
+	for i, p := range paragraphs {
 		chunks = append(
 			chunks,
 			Chunk{
-				ID:      fmt.Sprintf("%s-%d", filename, i/size),
+				ID:      fmt.Sprintf("%s-%d", filename, i),
 				File:    filename,
-				Content: strings.Join(words[i:end], " "),
+				Content: p,
 				Vector:  []float32{},
 			},
 		)

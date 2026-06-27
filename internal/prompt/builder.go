@@ -8,7 +8,7 @@ import (
 type SearchResult struct {
 	Content string
 	File    string
-	Score   float64
+	Score   float32
 }
 
 func BuildPrompt(
@@ -23,6 +23,13 @@ func BuildPrompt(
 		You are a helpful assistant. 
 		Use the following context to answer the question.
 		If the context does not contain the answer, say "I don't know".
+
+		Use the following language to answer the question based on the question's language.
+
+		Always cite the source files used.
+		
+		At the end of the answer, list all source filenames. 
+		Example: [Source: redis.md]
 
 		Context:
 		%s

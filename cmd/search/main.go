@@ -6,12 +6,11 @@ import (
 	"log"
 
 	"github.com/tukangk3tik/rag-starter/internal/chat"
+	"github.com/tukangk3tik/rag-starter/internal/config"
 	"github.com/tukangk3tik/rag-starter/internal/embedder"
 	"github.com/tukangk3tik/rag-starter/internal/prompt"
 	"github.com/tukangk3tik/rag-starter/internal/qdrant"
 )
-
-var MinScore = float32(0.6)
 
 func main() {
 	query := "kenapa redis cepat?"
@@ -36,15 +35,26 @@ func main() {
 	results, err := qdrantClient.Search(
 		context.Background(),
 		queryVector,
-		5,
+		config.DefaultConfig.TopK,
 	)
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	fmt.Println("============== Retrieved Context ==============")
+
 	topKResults := make([]prompt.SearchResult, 0)
 	for _, result := range results {
-		if result.Score < float64(MinScore) {
+		// debug print the retrieved context
+		fmt.Printf(
+			"Score: %f\nFile: %sChunk: %s\nContent:\n%s\n\n",
+			result.Score,
+			result.Payload.File,
+			result.Payload.ChunkID,
+			result.Payload.Content,
+		)
+
+		if result.Score < config.DefaultConfig.MinScore {
 			continue
 		}
 		topKResults = append(topKResults, prompt.SearchResult{
@@ -71,5 +81,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Println("Response:", response)
+	fmt.Print("Response ----------------------------------------\n\n")
+	fmt.Print(response)
 }

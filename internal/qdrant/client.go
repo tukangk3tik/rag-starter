@@ -24,7 +24,7 @@ type ChunkPayload struct {
 type SearchResult struct {
 	ID      string       `json:"id"`
 	Version int          `json:"version"`
-	Score   float64      `json:"score"`
+	Score   float32      `json:"score"`
 	Payload ChunkPayload `json:"payload"`
 }
 
@@ -245,5 +245,6 @@ func (c *Client) Search(
 	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
 		return nil, fmt.Errorf("decode response: %w", err)
 	}
+
 	return response.Result, nil
 }

@@ -22,6 +22,7 @@ The project demonstrates a simple end-to-end RAG pipeline:
 - `internal/chat/` - Ollama chat generation client
 - `internal/prompt/` - prompt construction for the LLM
 - `internal/qdrant/` - Qdrant client for collection creation, upsert, and search
+- `internal/config/` - retrieval configuration defaults for Top-K and score filtering
 - `docs/` - sample documents used for ingestion
 
 ## Prerequisites
@@ -60,7 +61,7 @@ This reads files from `docs/`, chunks them, generates embeddings, and stores the
 go run ./cmd/search
 ```
 
-This embeds a sample query, searches Qdrant for relevant context, builds a prompt, and prints the generated answer.
+This embeds a sample query, searches Qdrant for relevant context, filters results by score, builds a prompt with cited sources, and prints the generated answer.
 
 ## Configuration
 

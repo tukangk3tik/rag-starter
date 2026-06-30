@@ -47,13 +47,16 @@ func main() {
 	for _, result := range results {
 		// debug print the retrieved context
 		fmt.Printf(
-			"Score: %f\nFile: %sChunk: %s\nContent:\n%s\n\n",
+			"Score: %f\nFile: %s\nChunk: %s\nTitle: %s\nSection: %s\nChunkIndex: %d\n\nContent: \n%s\n",
 			result.Score,
 			result.Payload.File,
 			result.Payload.ChunkID,
+			result.Payload.Title,
+			result.Payload.Section,
+			result.Payload.ChunkIndex,
 			result.Payload.Content,
 		)
-
+		fmt.Println("--------------------------------------------------")
 		if result.Score < config.DefaultConfig.MinScore {
 			continue
 		}

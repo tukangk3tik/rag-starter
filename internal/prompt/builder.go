@@ -29,7 +29,12 @@ func BuildPrompt(
 		Always cite the source files used.
 		
 		At the end of the answer, list all source filenames. 
-		Example: [Source: redis.md]
+		Format: <filename> (<section>) for each source file used. 
+		Example below:
+		Source: 
+		redis.md (Introduction)
+		redis.md (Installation)
+		redis.md (Configuration)
 
 		Context:
 		%s

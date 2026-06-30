@@ -16,9 +16,13 @@ type Client struct {
 }
 
 type ChunkPayload struct {
-	ChunkID string `json:"chunk_id"`
-	Content string `json:"content"`
-	File    string `json:"file"`
+	ChunkID    string `json:"chunk_id"`
+	Content    string `json:"content"`
+	File       string `json:"file"`
+	Title      string `json:"title"`
+	Section    string `json:"section"`
+	ChunkIndex int    `json:"chunk_index"`
+	IndexedAt  string `json:"indexed_at"`
 }
 
 type SearchResult struct {
@@ -138,6 +142,10 @@ func (c *Client) Upsert(
 					ChunkID: point.ID,
 					Content: point.Content,
 					File:    point.File,
+					Title:      point.Title,
+					Section:    point.Section,
+					ChunkIndex: point.ChunkIndex,
+					IndexedAt:  point.IndexedAt,
 				},
 			},
 		},

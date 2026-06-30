@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/tukangk3tik/rag-starter/internal/chunker"
 	"github.com/tukangk3tik/rag-starter/internal/embedder"
@@ -63,13 +64,18 @@ func main() {
 			}
 			ch.Vector = vector
 
+			timeStamp := time.Now().Format("2006-01-02T15:04:05Z07:00")
 			err = qdrantClient.Upsert(
 				context.Background(),
 				qdrant.Point{
-					ID:      ch.ID,
-					Vector:  ch.Vector,
-					Content: ch.Content,
-					File:    ch.File,
+					ID:         ch.ID,
+					Vector:     ch.Vector,
+					Content:    ch.Content,
+					File:       ch.File,
+					Title:      ch.Title,
+					Section:    ch.Section,
+					ChunkIndex: ch.ChunkIndex,
+					IndexedAt:  timeStamp,
 				},
 			)
 			if err != nil {
@@ -81,6 +87,10 @@ func main() {
 			fmt.Printf("File	   : %s\n", ch.File)
 			fmt.Printf("Content	   : %s\n", ch.Content)
 			fmt.Printf("Vector	   : %f\n", ch.Vector[:5])
+			fmt.Printf("Title	   : %s\n", ch.Title)
+			fmt.Printf("Section	   : %s\n", ch.Section)
+			fmt.Printf("ChunkIndex : %d\n", ch.ChunkIndex)
+			fmt.Printf("IndexedAt  : %s\n", timeStamp)
 			fmt.Printf("Status	   : Success\n")
 		}
 

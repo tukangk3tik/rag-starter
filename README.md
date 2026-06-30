@@ -7,11 +7,11 @@ A small Go-based starter project for building a retrieval-augmented generation (
 The project demonstrates a simple end-to-end RAG pipeline:
 
 1. Read markdown/text files from the `docs/` folder.
-2. Split the content into chunks.
+2. Split the content into heading-aware chunks and preserve metadata such as title, section, chunk index, and ingestion time.
 3. Generate embeddings with Ollama.
-4. Store the chunks in a Qdrant collection.
-5. Search relevant chunks by vector similarity.
-6. Build a prompt from the retrieved context and generate a response with Ollama.
+4. Store the chunks and their metadata in a Qdrant collection.
+5. Search relevant chunks by vector similarity, filter by score threshold, and display the retrieved context for debugging.
+6. Build a prompt from the retrieved context, require source citations, and generate a response with Ollama.
 
 ## Project structure
 
@@ -70,8 +70,10 @@ The code currently uses these local defaults:
 - Qdrant base URL: `http://localhost:6333`
 - Ollama base URL: `http://localhost:11434`
 - Qdrant collection name: `knowledge`
+- Retrieval Top-K: `3`
+- Minimum retrieval score: `0.60`
 
-You can adjust these values directly in the relevant Go files if needed.
+You can adjust these values directly in the relevant Go files or in the retrieval config package if needed.
 
 ## Notes
 

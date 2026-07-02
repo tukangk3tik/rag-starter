@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
+	"github.com/tukangk3tik/rag-starter/internal/vectordb"
 )
 
 type Client struct {
@@ -15,25 +16,15 @@ type Client struct {
 	CollectionName string
 }
 
-type ChunkPayload struct {
-	ChunkID    string `json:"chunk_id"`
-	Content    string `json:"content"`
-	File       string `json:"file"`
-	Title      string `json:"title"`
-	Section    string `json:"section"`
-	ChunkIndex int    `json:"chunk_index"`
-	IndexedAt  string `json:"indexed_at"`
-}
-
-type SearchResult struct {
-	ID      string       `json:"id"`
-	Version int          `json:"version"`
-	Score   float32      `json:"score"`
-	Payload ChunkPayload `json:"payload"`
-}
-
 type SearchResponse struct {
-	Result []SearchResult `json:"result"`
+	Result []vectordb.SearchResult `json:"result"`
+}
+
+func NewClient(baseUrl string, collection string) *Client {
+	return &Client{
+		BaseURL:        baseUrl,
+		CollectionName: collection,
+	}
 }
 
 func (c *Client) CreateCollection(
@@ -138,10 +129,10 @@ func (c *Client) Upsert(
 			{
 				"id":     uuid.New().String(),
 				"vector": point.Vector,
-				"payload": ChunkPayload{
-					ChunkID: point.ID,
-					Content: point.Content,
-					File:    point.File,
+				"payload": vectordb.PointPayload{
+					ChunkID:    point.ID,
+					Content:    point.Content,
+					File:       point.File,
 					Title:      point.Title,
 					Section:    point.Section,
 					ChunkIndex: point.ChunkIndex,
@@ -195,15 +186,22 @@ func (c *Client) Upsert(
 	return nil
 }
 
-func (c *Client) Search(
-	ctx context.Context,
-	vector []float32,
-	limit int,
-) ([]SearchResult, error) {
+func (c *Client) Search(ctx context.Context, vector []float32, opts vectordb.SearchOptions) ([]vectordb.SearchResult, error) {
 	body := map[string]any{
 		"vector":       vector,
-		"limit":        limit,
+		"limit":        opts.TopK,
 		"with_payload": true,
+	}
+
+	if opts.File != "" {
+		body["filter"] = map[string]any{
+			"must": []map[string]any{
+				{
+					"key":   "file",
+					"match": map[string]any{"value": opts.File},
+				},
+			},
+		}
 	}
 
 	payload, err := json.Marshal(body)

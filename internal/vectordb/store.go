@@ -5,8 +5,11 @@ import "context"
 type SearchOptions struct {
 	TopK     int
 	MinScore float32
-	File     string
-	Section  string
+
+	File    string
+	Section string
+
+	Tags []string
 }
 
 type PointPayload struct {

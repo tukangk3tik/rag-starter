@@ -15,6 +15,18 @@ type Retriever struct {
 	Config   vectordb.SearchOptions
 }
 
+func NewRetriever(
+	embedder embedder.Embedder,
+	store vectordb.VectorStore,
+	config vectordb.SearchOptions,
+) *Retriever {
+	return &Retriever{
+		Embedder: embedder,
+		Store:    store,
+		Config:   config,
+	}
+}
+
 func (r *Retriever) Retrieve(
 	ctx context.Context,
 	query string,
